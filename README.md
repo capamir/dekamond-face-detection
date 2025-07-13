@@ -15,8 +15,6 @@ frontend/
 │   ├── services/                # Utility functions
 │   │   ├── faceApi.ts           # Face-api.js model loading and detection
 │   │   ├── storage.ts           # Optional localStorage helpers
-│   ├── types/                   # TypeScript interfaces
-│   │   ├── index.ts             # Types for images, face detection, etc.
 │   ├── App.tsx                  # Main app component with routing
 │   ├── index.tsx                # Entry point
 │   ├── main.css                 # Minimal styling
