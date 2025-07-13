@@ -1,36 +1,37 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Instructions from '../components/Instructions';
 import WebcamCapture from '../components/WebcamCapture';
+import { useNavigate } from 'react-router-dom';
 
 const MainPage: React.FC = () => {
-  const [step, setStep] = useState(0);
-  const [capturedImages, setCapturedImages] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  const handleCapture = (imageDataUrl: string) => {
-    const updatedImages = [...capturedImages, imageDataUrl];
-    setCapturedImages(updatedImages);
+  // 👇 Define required orientations for each step
+  const steps: ('straight' | 'left' | 'right')[] = ['straight', 'left', 'right'];
 
-    if (step < 2) {
-      setStep(step + 1); // move to next instruction
+  const [currentStep, setCurrentStep] = useState(0);
+  const [captures, setCaptures] = useState<string[]>([]);
+
+  const handleCapture = (imageDataUrl: string) => {
+    const newCaptures = [...captures, imageDataUrl];
+    setCaptures(newCaptures);
+
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
     } else {
-      // All 3 images captured → go to results
-      navigate('/results', {
-        state: {
-          front: updatedImages[0],
-          right: updatedImages[1],
-          left: imageDataUrl // the final capture
-        }
-      });
+      // All steps complete, go to results page
+      navigate('/results', { state: { captures: newCaptures } });
     }
   };
 
   return (
-    <div style={{ padding: '1rem', textAlign: 'center' }}>
-      <h1>Face Capture</h1>
-      <Instructions currentStep={step} />
-      <WebcamCapture onCapture={handleCapture} />
+    <div style={{ textAlign: 'center' }}>
+      <h2>Step {currentStep + 1} of {steps.length}</h2>
+      <p>Please turn your face: <strong>{steps[currentStep]}</strong></p>
+
+      <WebcamCapture
+        onCapture={handleCapture}
+        requiredOrientation={steps[currentStep]}
+      />
     </div>
   );
 };

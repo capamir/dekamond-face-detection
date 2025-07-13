@@ -1,30 +1,38 @@
-import React, { useEffect } from 'react';
+// src/pages/ResultsPage.tsx
+import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import ImageDisplay from '../components/ImageDisplay';
-
-interface LocationState {
-  front: string;
-  right: string;
-  left: string;
-}
 
 const ResultsPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state as LocationState | undefined;
 
-  // Redirect if no images were passed
-  useEffect(() => {
-    if (!state || !state.front || !state.right || !state.left) {
-      navigate('/');
-    }
-  }, [state, navigate]);
-
-  if (!state) return null;
+  const captures: string[] = location.state?.captures || [];
 
   return (
-    <div style={{ padding: '1rem' }}>
-      <ImageDisplay images={state} />
+    <div style={{ textAlign: 'center', padding: '2rem' }}>
+      <h2>Captured Images</h2>
+
+      {captures.length !== 3 ? (
+        <div>
+          <p style={{ color: 'red' }}>Missing image(s). Please try again.</p>
+          <button onClick={() => navigate('/')}>Restart</button>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem' }}>
+          {captures.map((img, idx) => (
+            <div key={idx}>
+              <img
+                src={img}
+                alt={`Face ${idx + 1}`}
+                style={{ width: 200, borderRadius: 8, border: '2px solid #ccc' }}
+              />
+              <p>
+                {['Front', 'Left', 'Right'][idx]}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
