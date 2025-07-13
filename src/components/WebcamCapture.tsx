@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { loadModels, detectFace } from '../services/faceApi';
+import React, { useRef } from 'react';
+import { useWebcam } from '../hooks/useWebcam';
+import { useFaceDetection } from '../hooks/useFaceDetection';
 
 interface WebcamCaptureProps {
   onCapture: (imageDataUrl: string) => void;
@@ -9,62 +10,9 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onCapture }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [isFaceDetected, setIsFaceDetected] = useState(false);
-  const [loadingModels, setLoadingModels] = useState(true);
+  useWebcam(videoRef);
+  const isFaceDetected = useFaceDetection(videoRef);
 
-  // Load models once
-  useEffect(() => {
-    loadModels().then(() => {
-      setLoadingModels(false);
-    });
-  }, []);
-
-  // Setup webcam feed
-  useEffect(() => {
-    const startCamera = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (err) {
-        console.error('Error accessing webcam:', err);
-      }
-    };
-
-    startCamera();
-    return () => {
-      // Stop webcam on unmount
-      if (videoRef.current?.srcObject) {
-        (videoRef.current.srcObject as MediaStream)
-          .getTracks()
-          .forEach(track => track.stop());
-      }
-    };
-  }, []);
-
-  // Face detection loop
-  const detectLoop = useCallback(() => {
-    const video = videoRef.current;
-    if (!video || video.paused || video.ended) {
-      requestAnimationFrame(detectLoop);
-      return;
-    }
-
-    detectFace(video).then(detection => {
-      setIsFaceDetected(!!detection);
-    });
-
-    requestAnimationFrame(detectLoop);
-  }, []);
-
-  useEffect(() => {
-    if (!loadingModels) {
-      detectLoop();
-    }
-  }, [loadingModels, detectLoop]);
-
-  // Capture photo to base64
   const handleCapture = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -100,10 +48,7 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onCapture }) => {
       </div>
 
       <div style={{ marginTop: 10 }}>
-        <button
-          onClick={handleCapture}
-          disabled={!isFaceDetected}
-        >
+        <button onClick={handleCapture} disabled={!isFaceDetected}>
           {isFaceDetected ? 'Capture' : 'Face Not Detected'}
         </button>
       </div>
