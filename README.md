@@ -1,69 +1,26 @@
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+frontend/
+├── src/
+│   ├── assets/                  # Static assets (e.g., face-api.js model files)
+│   │   ├── models/              # face-api.js model files (SSD MobileNet V1)
+│   ├── components/              # Reusable React components
+│   │   ├── WebcamCapture.tsx    # Handles webcam feed and photo capture
+│   │   ├── Instructions.tsx     # Displays step-by-step instructions
+│   │   ├── ImageDisplay.tsx     # Displays captured images on results page
+│   ├── pages/                   # Page components
+│   │   ├── MainPage.tsx         # Main page for photo capture
+│   │   ├── ResultsPage.tsx      # Results page for displaying images
+│   ├── hooks/                   # Custom hooks for logic
+│   │   ├── useFaceDetection.ts  # Face detection logic with face-api.js
+│   │   ├── useWebcam.ts         # Webcam handling logic
+│   ├── services/                # Utility functions
+│   │   ├── faceApi.ts           # Face-api.js model loading and detection
+│   │   ├── storage.ts           # Optional localStorage helpers
+│   ├── types/                   # TypeScript interfaces
+│   │   ├── index.ts             # Types for images, face detection, etc.
+│   ├── App.tsx                  # Main app component with routing
+│   ├── index.tsx                # Entry point
+│   ├── main.css                 # Minimal styling
+├── public/                      # Public assets (e.g., index.html)
+├── vite.config.ts               # Vite configuration
+├── tsconfig.json                # TypeScript configuration
+├── package.json
