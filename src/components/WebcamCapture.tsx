@@ -111,13 +111,24 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onCapture, requiredOrient
       </div>
 
       <div style={{ marginTop: 10 }}>
-        <p>Detected: <strong>{orientation}</strong></p>
-        <p>Required: <strong>{requiredOrientation}</strong></p>
-        {hasCaptured && <p style={{ color: 'green' }}>✅ Captured</p>}
-        {!hasCaptured && orientation === requiredOrientation && (
-          <p style={{ color: 'orange' }}>⏳ Capturing in 2 seconds...</p>
+        {streamError && <p style={{ color: 'red' }}>Webcam error: {streamError}</p>}
+
+        {!modelsLoaded ? (
+          <p style={{ color: 'gray' }}>🔄 Loading face detection models...</p>
+        ) : orientation === 'unknown' ? (
+          <p style={{ color: 'gray' }}>🧠 Waiting for face...</p>
+        ) : (
+          <>
+            <p>Detected: <strong>{orientation}</strong></p>
+            <p>Required: <strong>{requiredOrientation}</strong></p>
+            {hasCaptured && <p style={{ color: 'green' }}>✅ Captured</p>}
+            {!hasCaptured && orientation === requiredOrientation && (
+              <p style={{ color: 'orange' }}>⏳ Capturing in 2 seconds...</p>
+            )}
+          </>
         )}
       </div>
+
 
       <canvas ref={canvasRef} style={{ display: 'none' }} />
     </div>
