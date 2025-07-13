@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainPage from './pages/MainPage';
+import ResultsPage from './pages/ResultsPage';
 
 const App: React.FC = () => {
   
@@ -8,7 +9,7 @@ const App: React.FC = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<MainPage />} />
-        {/* <Route path="/review" element={<ReviewPage />} /> */}
+        <Route path="/review" element={<ResultsPage />} />
       </Routes>
     </BrowserRouter>
   );
