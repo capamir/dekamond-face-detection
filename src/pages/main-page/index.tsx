@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import WebcamCapture from '../components/WebcamCapture';
+import WebcamCapture from '@/components/WebcamCapture';
 import { useNavigate } from 'react-router-dom';
 
 const MainPage: React.FC = () => {

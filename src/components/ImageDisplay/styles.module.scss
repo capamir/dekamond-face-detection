@@ -1,0 +1,19 @@
+// src/components/ImageDisplay/styles.module.scss
+
+.Wrapper {
+  /* Typography */
+  text-align: center;
+}
+
+.Grid {
+  /* Layout */
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem; /* 16px */
+}
+
+.Image {
+  /* Layout */
+  width: 12.5rem; /* 200px */
+}

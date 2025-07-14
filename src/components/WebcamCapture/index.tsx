@@ -1,13 +1,52 @@
-// src/components/WebcamCapture.tsx
+import styles from './styles.module.scss';
 import React, { useEffect, useRef, useState } from 'react';
-import { loadModels } from '../services/faceApi';
-import { useFaceOrientation } from '../hooks/useFaceOrientation';
+import { loadModels } from '@/api/faceApi';
+import { useFaceOrientation, type Orientation } from '@/hooks/useFaceOrientation';
 
+// --- Props Interfaces ---
 interface WebcamCaptureProps {
   onCapture: (imageDataUrl: string) => void;
   requiredOrientation: 'straight' | 'left' | 'right';
 }
 
+interface StatusDisplayProps {
+  modelsLoaded: boolean;
+  orientation: Orientation;
+  requiredOrientation: 'straight' | 'left' | 'right';
+  hasCaptured: boolean;
+  streamError: string | null;
+}
+
+// --- Status Display Sub-Component ---
+const StatusDisplay: React.FC<StatusDisplayProps> = ({
+  modelsLoaded,
+  orientation,
+  requiredOrientation,
+  hasCaptured,
+  streamError,
+}) => {
+  if (streamError) {
+    return <p className={styles.ErrorText}>Webcam error: {streamError}</p>;
+  }
+  if (!modelsLoaded) {
+    return <p className={styles.StatusText}>🔄 Loading face detection models...</p>;
+  }
+  if (orientation === 'unknown') {
+    return <p className={styles.StatusText}>🧠 Waiting for face...</p>;
+  }
+  return (
+    <>
+      <p>Detected: <strong>{orientation}</strong></p>
+      <p>Required: <strong>{requiredOrientation}</strong></p>
+      {hasCaptured && <p className={styles.SuccessText}>✅ Captured</p>}
+      {!hasCaptured && orientation === requiredOrientation && (
+        <p className={styles.WarningText}>⏳ Capturing in 2 seconds...</p>
+      )}
+    </>
+  );
+};
+
+// --- Main Component ---
 const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onCapture, requiredOrientation }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -59,13 +98,11 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onCapture, requiredOrient
   // Trigger auto-capture with delay
   useEffect(() => {
     if (!hasCaptured && orientation === requiredOrientation) {
-      // Start delayed capture
       const timeoutId = window.setTimeout(() => {
         handleCapture();
       }, 2000); // 2 second delay
       setPendingTimeout(timeoutId);
     } else {
-      // Cancel delayed capture if orientation no longer matches
       if (pendingTimeout) {
         clearTimeout(pendingTimeout);
         setPendingTimeout(null);
@@ -90,47 +127,31 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onCapture, requiredOrient
     }
   };
 
-  return (
-    <div>
-      {streamError && <p style={{ color: 'red' }}>Webcam error: {streamError}</p>}
+  const isOrientedCorrectly = orientation === requiredOrientation;
 
-      <div
-        style={{
-          border: `4px solid ${orientation === requiredOrientation ? 'green' : 'red'}`,
-          width: 'fit-content',
-          display: 'inline-block',
-        }}
-      >
+  return (
+    <div className={styles.Wrapper}>
+      <div className={`${styles.VideoContainer} ${isOrientedCorrectly ? styles.BorderGreen : styles.BorderRed}`}>
         <video
           ref={videoRef}
           autoPlay
           muted
           playsInline
-          style={{ width: 400, height: 300, objectFit: 'cover' }}
+          className={styles.Video}
         />
       </div>
 
-      <div style={{ marginTop: 10 }}>
-        {streamError && <p style={{ color: 'red' }}>Webcam error: {streamError}</p>}
-
-        {!modelsLoaded ? (
-          <p style={{ color: 'gray' }}>🔄 Loading face detection models...</p>
-        ) : orientation === 'unknown' ? (
-          <p style={{ color: 'gray' }}>🧠 Waiting for face...</p>
-        ) : (
-          <>
-            <p>Detected: <strong>{orientation}</strong></p>
-            <p>Required: <strong>{requiredOrientation}</strong></p>
-            {hasCaptured && <p style={{ color: 'green' }}>✅ Captured</p>}
-            {!hasCaptured && orientation === requiredOrientation && (
-              <p style={{ color: 'orange' }}>⏳ Capturing in 2 seconds...</p>
-            )}
-          </>
-        )}
+      <div className={styles.StatusContainer}>
+        <StatusDisplay
+          modelsLoaded={modelsLoaded}
+          orientation={orientation}
+          requiredOrientation={requiredOrientation}
+          hasCaptured={hasCaptured}
+          streamError={streamError}
+        />
       </div>
 
-
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
+      <canvas ref={canvasRef} className={styles.CanvasHidden} />
     </div>
   );
 };

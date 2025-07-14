@@ -1,3 +1,4 @@
+import styles from './styles.module.scss';
 import React from 'react';
 
 interface InstructionsProps {
@@ -14,7 +15,7 @@ const Instructions: React.FC<InstructionsProps> = ({ currentStep }) => {
   const message = stepMessages[currentStep] || 'All steps completed.';
 
   return (
-    <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+    <div className={styles.Wrapper}>
       <h2>Step {currentStep + 1} of 3</h2>
       <p>{message}</p>
     </div>

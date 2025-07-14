@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
 import * as faceapi from 'face-api.js';
 
-type Orientation = 'straight' | 'left' | 'right' | 'unknown';
-
 /**
- * Estimate face orientation based on landmark positions.
- * @param landmarks FaceLandmarks68 from face-api.js
+ * The possible orientations of the user's face.
  */
+export type Orientation = 'straight' | 'left' | 'right' | 'unknown';
+
 function estimateOrientation(landmarks: faceapi.FaceLandmarks68): Orientation {
-  const leftEye = landmarks.getLeftEye(); // points 36-41
-  const rightEye = landmarks.getRightEye(); // points 42-47
-  const nose = landmarks.getNose(); // points 27-35
+  const leftEye = landmarks.getLeftEye();
+  const rightEye = landmarks.getRightEye();
+  const nose = landmarks.getNose();
 
   const leftEyeX = leftEye[0].x;
   const rightEyeX = rightEye[3].x;
@@ -19,13 +18,26 @@ function estimateOrientation(landmarks: faceapi.FaceLandmarks68): Orientation {
   const eyeCenterX = (leftEyeX + rightEyeX) / 2;
   const offset = noseX - eyeCenterX;
 
-  if (Math.abs(offset) < 10) return 'straight';
-  if (offset > 15) return 'left';
-  if (offset < -15) return 'right';
+  // These thresholds might need tweaking for different cameras or lighting.
+  if (Math.abs(offset) < 10) {
+    return 'straight';
+  }
+  if (offset > 15) {
+    return 'left'; // User's head is turned to their left (appears on the right side of the screen)
+  }
+  if (offset < -15) {
+    return 'right'; // User's head is turned to their right (appears on the left side of the screen)
+  }
 
   return 'unknown';
 }
 
+/**
+ * A custom hook to detect the orientation of a face from a video feed.
+ * @param video - A React ref to the HTMLVideoElement.
+ * @param enabled - A boolean to enable or disable the detection loop.
+ * @returns An object containing the current `orientation` and an `isDetecting` flag.
+ */
 export function useFaceOrientation(
   video: HTMLVideoElement | null,
   enabled: boolean
@@ -34,7 +46,10 @@ export function useFaceOrientation(
   const [isDetecting, setIsDetecting] = useState(false);
 
   useEffect(() => {
-    if (!video || !enabled) return;
+    if (!video || !enabled) {
+      setIsDetecting(false);
+      return;
+    }
 
     let animationId: number;
 

@@ -1,0 +1,50 @@
+.Wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.VideoContainer {
+  display: inline-block;
+  width: fit-content;
+  border-width: 0.25rem; /* 4px */
+  border-style: solid;
+}
+
+.BorderGreen {
+  border-color: green;
+}
+
+.BorderRed {
+  border-color: red;
+}
+
+.Video {
+  width: 25rem; /* 400px */
+  height: 18.75rem; /* 300px */
+  object-fit: cover;
+}
+
+.StatusContainer {
+  margin-top: 0.625rem; /* 10px */
+}
+
+.ErrorText {
+  color: red;
+}
+
+.SuccessText {
+  color: green;
+}
+
+.WarningText {
+  color: orange;
+}
+
+.StatusText {
+  color: gray;
+}
+
+.CanvasHidden {
+  display: none;
+}
